@@ -21,6 +21,105 @@ extern "C" fn malloc(comprimento: usize) -> *mut u8 {
 }
 
 #[no_mangle]
+extern "C" fn filtro_preto_e_branco(ponteiro: *mut u8, comprimento: usize) {
+    let pixels = unsafe { from_raw_parts_mut(ponteiro as *mut u8, comprimento) };
+
+    let mut i = 0;
+
+    loop {
+        if i >= comprimento {
+            break;
+        }
+        let filtro = (pixels[i] / 3) + (pixels[i + 1] / 3) + (pixels[i + 2] / 3);
+        pixels[i] = filtro;
+        pixels[i + 1] = filtro;
+        pixels[i + 2] = filtro;
+        i += 4;
+    }
+}
+#[no_mangle]
+extern "C" fn filtro_vermelho(data: *mut u8, comprimento: usize) {
+    let pixels = unsafe { from_raw_parts_mut(data as *mut u8, comprimento) };
+
+    let mut i = 0;
+
+    loop {
+        if i >= comprimento - 1 {
+            break;
+        }
+        pixels[i + 1] = pixels[i + 1] / 2;
+        pixels[i + 2] = pixels[i + 2] / 2;
+        pixels[i + 5] = pixels[i + 5] / 2;
+        pixels[i + 6] = pixels[i + 6] / 2;
+        i += 8;
+    }
+}
+
+#[no_mangle]
+extern "C" fn filtro_verde(data: *mut u8, comprimento: usize) {
+    let pixels = unsafe { from_raw_parts_mut(data as *mut u8, comprimento) };
+
+    let mut i = 0;
+
+    loop {
+        if i >= comprimento - 1 {
+            break;
+        }
+        pixels[i] = pixels[i] / 2;
+        pixels[i + 2] = pixels[i + 2] / 2;
+        pixels[i + 4] = pixels[i + 4] / 2;
+        pixels[i + 6] = pixels[i + 6] / 2;
+        i += 8;
+    }
+}
+#[no_mangle]
+extern "C" fn filtro_azul(data: *mut u8, comprimento: usize) {
+    let pixels = unsafe { from_raw_parts_mut(data as *mut u8, comprimento) };
+
+    let mut i = 0;
+
+    loop {
+        if i >= comprimento - 1 {
+            break;
+        }
+        pixels[i] = pixels[i] / 2;
+        pixels[i + 1] = pixels[i + 1] / 2;
+        pixels[i + 4] = pixels[i + 4] / 2;
+        pixels[i + 5] = pixels[i + 5] / 2;
+        i += 8;
+    }
+}
+#[no_mangle]
+extern "C" fn filtro_opacidade(data: *mut u8, comprimento: usize) {
+    let pixels = unsafe { from_raw_parts_mut(data as *mut u8, comprimento) };
+
+    let mut i = 0;
+    let alfa = 10;
+
+    loop {
+        if i >= comprimento - 1 {
+            break;
+        }
+        let valor_atual = pixels[i + 3];
+        if valor_atual >= alfa {
+            pixels[i + 3] = valor_atual - alfa;
+        } else {
+            pixels[i + 3] = 0;
+        }
+        i += 4;
+    }
+}
+#[no_mangle]
+extern "C" fn filtro_inversao(data: *mut u8, comprimento: usize) {
+    let pixels = unsafe { from_raw_parts_mut(data as *mut u8, comprimento) };
+
+    for i in (0..comprimento).step_by(4) {
+        pixels[i] = 255 - pixels[i];
+        pixels[i + 1] = 255 - pixels[i + 1];
+        pixels[i + 2] = 255 - pixels[i + 2];
+    }
+}
+#[no_mangle]
 extern "C" fn acumular(ponteiro: *mut u8, comprimento: usize) -> i32 {
     let fatia = unsafe { from_raw_parts_mut(ponteiro as *mut u8, comprimento) };
     let mut soma = 0;
