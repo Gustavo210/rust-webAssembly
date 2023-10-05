@@ -1,4 +1,4 @@
-const arquivo = "./target/wasm32-unknown-unknown/release/editor.wasm";
+const arquivo = "./editor.wasm";
 const input = document.querySelector("input");
 const botaoResetarFiltro = document.querySelector("#remover");
 const botaoPBFiltroJS = document.querySelector("#preto-e-branco-js");
